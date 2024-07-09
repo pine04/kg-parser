@@ -1,0 +1,4 @@
+[submodule "jda"]
+	path = jda
+	url = https://github.com/jdomainapp/jda.git
+	branch = f59integration
