@@ -1,6 +1,7 @@
 package jda.example;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import java.io.File;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
@@ -45,13 +46,20 @@ public class Main implements AutoCloseable {
     final var dbPassword = dotenv.get("NEO4J_PASSWORD");
     final var dbName = dotenv.get("NEO4J_DATABASE");
 
-    if (dbUri == null || dbUser == null || dbPassword == null) {
+    if (dbUri == null || dbUser == null || dbPassword == null ||
+        dbName == null) {
       System.err.println("Missing environment variables");
       return;
     }
 
-    try (final var connection = new Main(dbUri, dbUser, dbPassword)) {
-      connection.example(dbName);
-    }
+    // Neo4j example
+    // try (final var connection = new Main(dbUri, dbUser, dbPassword)) {
+    //   connection.example(dbName);
+    // }
+
+    // Parsing jda's sccl dccl example
+    jda.parser.resource.Resource.bfsScan().forEach((e) -> {
+      jda.parser.Parser.parse(e);
+    });
   }
 }

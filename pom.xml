@@ -40,12 +40,18 @@
             <version>3.0.0</version>
         </dependency>
 
-        <dependency>
+        <!-- <dependency>
             <groupId>jda.modules</groupId>
             <artifactId>jda-main</artifactId>
             <version>5.4-SNAPSHOT</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/jda/main/target/jda-main-5.4-SNAPSHOT.jar</systemPath>
+        </dependency> -->
+
+        <dependency>
+            <groupId>com.github.javaparser</groupId>
+            <artifactId>javaparser-symbol-solver-core</artifactId>
+            <version>3.26.1</version>
         </dependency>
     </dependencies>
 </project>
