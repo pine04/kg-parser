@@ -12,6 +12,8 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <build>
@@ -39,14 +41,6 @@
             <artifactId>dotenv-java</artifactId>
             <version>3.0.0</version>
         </dependency>
-
-        <!-- <dependency>
-            <groupId>jda.modules</groupId>
-            <artifactId>jda-main</artifactId>
-            <version>5.4-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/jda/main/target/jda-main-5.4-SNAPSHOT.jar</systemPath>
-        </dependency> -->
 
         <dependency>
             <groupId>com.github.javaparser</groupId>

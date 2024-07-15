@@ -20,6 +20,8 @@ public class Main {
     final var dbConnection = Connection.getInstance(dbUri, dbUser, dbPassword);
     final var session = dbConnection.newSession(dbName);
     session.debug();
+
+    session.close();
     dbConnection.close();
   }
 }
