@@ -4,8 +4,9 @@
 
 ```bash
 git clone --recursive https://github.com/pine04/kg-parser
-cd jda
-mvn clean install -DskipTest=true
+# cd jda
+# mvn clean install -DskipTest=true
+# Update: không cần chạy nữa, jda ở đây là ref để parse code.
 ```
 
 Để chạy project:
