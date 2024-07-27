@@ -1,0 +1,3 @@
+@ModelDesc(
+        model = ${domainClass}.class
+    )
