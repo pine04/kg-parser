@@ -4,29 +4,24 @@ import org.example.KnowledgeGraph;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.types.Node;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import static org.example.Constants.basePackage;
 
 public class ModelDescModel extends AnnotationModel {
+    private static final List<String> defaultImports = List.of(new String[] {
+        "jda.modules.mccl.syntax.model.ModelDesc",
+    });
+
     private String domainClass;
-
-    public String getDomainClass() {
-        return domainClass;
-    }
-
-    public void setDomainClass(String domainClass) {
-        this.domainClass = domainClass;
-    }
 
     public static ModelDescModel nodeToModel(Node node) {
         Map<String, Object> nodeProperties = node.asMap();
 
         ModelDescModel modelDescModel = new ModelDescModel();
-
-        ArrayList<String> imports = new ArrayList<>();
+        modelDescModel.imports = new HashSet<>(defaultImports);
 
         try {
             List<Record> records = KnowledgeGraph.query(String.format("MATCH (:ANNOTATION {name: \"%s\"})-[:HAS_DOMAIN_CLASS]->(domainClass:CLASS) RETURN domainClass", nodeProperties.get("name")));
@@ -35,16 +30,14 @@ public class ModelDescModel extends AnnotationModel {
                 String domainClassName = domainClassNode.get("name").asString();
                 String domainClassPackage = domainClassNode.get("packageName").asString();
 
-                modelDescModel.setDomainClass(domainClassName);
-                imports.add(basePackage + "." + domainClassPackage + "." + domainClassName);
+                modelDescModel.domainClass = domainClassName;
+                modelDescModel.imports.add(basePackage + "." + domainClassPackage + "." + domainClassName);
             } else {
-                modelDescModel.setDomainClass("Null");
+                modelDescModel.domainClass = "Null";
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
         }
-
-        modelDescModel.setImports(imports);
 
         return modelDescModel;
     }
@@ -52,5 +45,9 @@ public class ModelDescModel extends AnnotationModel {
     @Override
     public String getTemplateName() {
         return "templates/ModelDesc.ftlh";
+    }
+
+    public String getDomainClass() {
+        return domainClass;
     }
 }

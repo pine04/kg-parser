@@ -8,6 +8,10 @@ CREATE
 (viewDesc:ANNOTATION_TYPE { name: "ViewDesc" }),
 (controllerDesc:ANNOTATION_TYPE { name: "ControllerDesc" }),
 (setupDesc:ANNOTATION_TYPE { name: "SetUpDesc" }),
+(attributeDesc:ANNOTATION_TYPE { name: "AttributeDesc" }),
+(select:ANNOTATION_TYPE { name: "Select" }),
+(jsValidation:ANNOTATION_TYPE { name: "JSValidation" }),
+(propertyDesc:ANNOTATION_TYPE { name: "PropertyDesc" }),
 
 // Software files that are not generated.
 (sccCourseManDerby:CLASS {name: "SCCCourseManDerby", packageName: "software.config", sourceFilePath: "\examples\courseman\mosar\src\main\java\org\jda\example\coursemanrestful\software\config\SCCCourseManDerby.java"}),
@@ -73,6 +77,48 @@ CREATE
 	view: "View.class"
 })-[:INSTANCE_OF]->(viewDesc),
 (moduleStudentDescriptor)-[:HAS_CONTROLLER]->(:ANNOTATION { name: "ModuleStudentController" })-[:INSTANCE_OF]->(controllerDesc),
+
+(moduleStudent)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "title",
+	dataType: "String"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Manage Students" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleStudent)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "id",
+	dataType: "int"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Student ID" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleStudent)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "name",
+	dataType: "String"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Full Name" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleStudent)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "gender",
+	dataType: "Gender",
+	requiredImport: "org.jda.example.coursemanrestful.modules.student.model.Gender"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Gender" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleStudent)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "dob",
+	dataType: "Date",
+	requiredImport: "java.util.Date"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Date of birth" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleStudent)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "email",
+	dataType: "String"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Email" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleStudent)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "address",
+	dataType: "Address",
+	requiredImport: "org.jda.example.coursemanrestful.modules.address.model.Address"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Current Address" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleStudent)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "studentClass",
+	dataType: "StudentClass",
+	requiredImport: "org.jda.example.coursemanrestful.modules.studentclass.model.StudentClass"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Student class" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleStudent)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "enrolments",
+	dataType: "Collection<Enrolment>",
+	requiredImport: "java.util.Collection,org.jda.example.coursemanrestful.modules.enrolment.model.Enrolment"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Course Enrolments" })-[:INSTANCE_OF]->(attributeDesc),
         
 // Module address.
 (moduleAddress:CLASS { name: "ModuleAddress", packageName: "modules.address" }),
@@ -89,6 +135,24 @@ CREATE
 	view: "View.class"
 })-[:INSTANCE_OF]->(viewDesc),
 (moduleAddressDescriptor)-[:HAS_CONTROLLER]->(:ANNOTATION { name: "ModuleAddressController" })-[:INSTANCE_OF]->(controllerDesc),
+
+(moduleAddress)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "title",
+	dataType: "String"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Form: Address" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleAddress)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "id",
+	dataType: "int"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "ID" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleAddress)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "name",
+	dataType: "String"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "City name" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleAddress)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "student",
+	dataType: "Student",
+	requiredImport: "org.jda.example.coursemanrestful.modules.student.model.Student"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Student" })-[:INSTANCE_OF]->(attributeDesc),
             
 // Module student class.
 (moduleStudentClass:CLASS { name: "ModuleStudentClass", packageName: "modules.studentclass" }),
@@ -116,6 +180,28 @@ CREATE
 	name: "ModuleStudentClassSetUp", 
 	postSetUp: "CopyResourceFilesCommand.class" 
 })-[:INSTANCE_OF]->(setupDesc),
+
+(moduleStudentClass)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "title",
+	dataType: "String"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Student Class" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleStudentClass)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "id",
+	dataType: "int"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Id" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleStudentClass)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "name",
+	dataType: "String"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Name" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleStudentClass)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "students",
+	dataType: "List<Student>",
+	requiredImport: "java.util.List,org.jda.example.coursemanrestful.modules.student.model.Student"
+})<-[:ATTACH_TO]-(studentsAttributeAnnotation:ANNOTATION {
+	label: "Gender",
+	type: "DefaultPanel"
+})-[:INSTANCE_OF]->(attributeDesc),
+(studentsAttributeAnnotation)-[:HAS_CONTROLLER]->(:ANNOTATION { openPolicy: "OpenPolicy.L_C" })-[:INSTANCE_OF]->(controllerDesc),
                 
 // Module enrolment.
 (moduleEnrolment:CLASS { name: "ModuleEnrolment", packageName: "modules.enrolment" }),
@@ -137,12 +223,75 @@ CREATE
 (moduleEnrolmentDescriptor)-[:HAS_CONTROLLER]->(:ANNOTATION { 
 	name: "ModuleEnrolmentController", 
 	controller: "Controller.class", 
-	isDataFieldStateListener: true 
+	isDataFieldStateListener: "true"
 })-[:INSTANCE_OF]->(controllerDesc),
 (moduleEnrolmentDescriptor)-[:HAS_SETUP]->(:ANNOTATION { 
 	name: "ModuleEnrolmentSetUp", 
 	postSetUp: "CopyResourceFilesCommand.class" 
 })-[:INSTANCE_OF]->(setupDesc),
+
+(moduleEnrolment)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "title",
+	dataType: "String"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Manage Enrolments" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleEnrolment)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "id",
+	dataType: "int"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Id", alignX: "AlignmentX.Center" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleEnrolment)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "student",
+	dataType: "Student",
+	requiredImport: "org.jda.example.coursemanrestful.modules.student.model.Student"
+})<-[:ATTACH_TO]-(studentAttributeAnnotation:ANNOTATION {
+	label: "Student",
+	type: "JComboField",
+	loadOidWithBoundValue: "true",
+	displayOidWithBoundValue: "true"
+})-[:INSTANCE_OF]->(attributeDesc),
+(studentAttributeAnnotation)-[:HAS_SELECT]->(:ANNOTATION {
+	clazz: "Student",
+	attributes: "name",
+	requiredImport: "org.jda.example.coursemanrestful.modules.student.model.Student"
+})-[:INSTANCE_OF]->(select),
+(moduleEnrolment)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "courseModule",
+	dataType: "CourseModule",
+	requiredImport: "org.jda.example.coursemanrestful.modules.coursemodule.model.CourseModule"
+})<-[:ATTACH_TO]-(courseModuleAttributeAnnotation:ANNOTATION {
+	label: "Course Module",
+	type: "JComboField",
+	width: 80,
+	height: 25,
+	isStateEventSource: "true",
+	alignX: "AlignmentX.Center"
+})-[:INSTANCE_OF]->(attributeDesc),
+(courseModuleAttributeAnnotation)-[:HAS_SELECT]->(:ANNOTATION {
+	clazz: "CourseModule",
+	attributes: "code",
+	requiredImport: "org.jda.example.coursemanrestful.modules.coursemodule.model.CourseModule"
+})-[:INSTANCE_OF]->(select),
+(moduleEnrolment)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "internalMark",
+	dataType: "double"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Internal Mark", alignX: "AlignmentX.Center" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleEnrolment)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "examMark",
+	dataType: "double"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Exam Mark", alignX: "AlignmentX.Center" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleEnrolment)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "finalGrade",
+	dataType: "char"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Final Grade", alignX: "AlignmentX.Center" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleEnrolment)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "startDate",
+	dataType: "Date",
+	requiredImport: "java.util.Date"
+})<-[:ATTACH_TO]-(:ANNOTATION { id: "date_range", label: "Date range", inputType: "InputTypes.DateRangeStart" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleEnrolment)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "endDate",
+	dataType: "Date",
+	requiredImport: "java.util.Date"
+})<-[:ATTACH_TO]-(:ANNOTATION { id: "date_range", label: "Date range", inputType: "InputTypes.DateRangeEnd" })-[:INSTANCE_OF]->(attributeDesc),
                     
 // Module compulsory module.
 (moduleCompulsoryModule:CLASS { name: "ModuleCompulsoryModule", packageName: "modules.coursemodule" }),
@@ -169,6 +318,11 @@ CREATE
 	name: "ModuleCompulsoryModuleSetUp", 
 	postSetUp: "CopyResourceFilesCommand.class" 
 })-[:INSTANCE_OF]->(setupDesc),
+
+(moduleCompulsoryModule)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "title",
+	dataType: "String"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Form: Compulsory Module" })-[:INSTANCE_OF]->(attributeDesc),
                         
 // Module elective module.
 (moduleElectiveModule:CLASS { name: "ModuleElectiveModule", packageName: "modules.coursemodule" }),
@@ -189,6 +343,15 @@ CREATE
 })-[:INSTANCE_OF]->(viewDesc),
 (moduleElectiveModuleDescriptor)-[:HAS_CONTROLLER]->(:ANNOTATION { name: "ModuleElectiveModuleController", controller: "Controller.class" })-[:INSTANCE_OF]->(controllerDesc),
 (moduleElectiveModuleDescriptor)-[:HAS_SETUP]->(:ANNOTATION { name: "ModuleElectiveModuleSetUp", postSetUp: "CopyResourceFilesCommand.class" })-[:INSTANCE_OF]->(setupDesc),
+
+(moduleElectiveModule)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "title",
+	dataType: "String"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Form: Elective Module" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleElectiveModule)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "deptName",
+	dataType: "String"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Dept. Name", alignX: "AlignmentX.Center" })-[:INSTANCE_OF]->(attributeDesc),
                             
 // Module course module.
 (moduleCourseModule:CLASS { name: "ModuleCourseModule", packageName: "modules.coursemodule" }),
@@ -209,6 +372,56 @@ CREATE
 })-[:INSTANCE_OF]->(viewDesc),
 (moduleCourseModuleDescriptor)-[:HAS_CONTROLLER]->(:ANNOTATION { name: "ModuleCourseModuleController", controller: "Controller.class" })-[:INSTANCE_OF]->(controllerDesc),
 (moduleCourseModuleDescriptor)-[:HAS_SETUP]->(:ANNOTATION { name: "ModuleCourseModuleSetUp", postSetUp: "CopyResourceFilesCommand.class" })-[:INSTANCE_OF]->(setupDesc),
+
+(moduleCourseModule)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "title",
+	dataType: "String"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Form: Course Module" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleCourseModule)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "id",
+	dataType: "int"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Id", alignX: "AlignmentX.Center" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleCourseModule)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "code",
+	dataType: "String"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Code", alignX: "AlignmentX.Center" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleCourseModule)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "name",
+	dataType: "String"
+})<-[:ATTACH_TO]-(nameAttributeAnnotation:ANNOTATION { label: "Name" })-[:INSTANCE_OF]->(attributeDesc),
+(nameAttributeAnnotation)-[:HAS_JS_VALIDATION]->(:ANNOTATION {
+	regex: "/^S\\\\d+$/",
+	invalidMsg: "Name must start with 'S' and followed by one or more numbers!"
+})-[:INSTANCE_OF]->(jsValidation),
+(moduleCourseModule)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "description",
+	dataType: "String"
+})<-[:ATTACH_TO]-(descriptionAttributeAnnotation:ANNOTATION { label: "Description", inputType: "InputTypes.TextArea" })-[:INSTANCE_OF]->(attributeDesc),
+(descriptionAttributeAnnotation)-[:HAS_JS_VALIDATION]->(:ANNOTATION {
+	optional: "true",
+	regex: "/^[A-Za-z\\\\s]$/",
+	invalidMsg: "Description must only include characters!"
+})-[:INSTANCE_OF]->(jsValidation),
+(moduleCourseModule)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "semester",
+	dataType: "int"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Semester", alignX: "AlignmentX.Center" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleCourseModule)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "cost",
+	dataType: "int"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Cost", inputType: "InputTypes.Slider" })-[:INSTANCE_OF]->(attributeDesc),
+(moduleCourseModule)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "credits",
+	dataType: "int"
+})<-[:ATTACH_TO]-(creditsAttributeAnnotation:ANNOTATION { label: "Credits", alignX: "AlignmentX.Center" })-[:INSTANCE_OF]->(attributeDesc),
+(creditsAttributeAnnotation)-[:HAS_JS_VALIDATION]->(:ANNOTATION {
+	regex: "/^\\\\d+$/",
+	invalidMsg: "Credits must be a number or a float number!"
+})-[:INSTANCE_OF]->(jsValidation),
+(moduleCourseModule)-[:HAS_ATTRIBUTE]->(:ATTRIBUTE {
+	name: "rating",
+	dataType: "int"
+})<-[:ATTACH_TO]-(:ANNOTATION { label: "Rating", inputType: "InputTypes.Rating" })-[:INSTANCE_OF]->(attributeDesc),
                                 
 // Relationship between course module and compulsory and elective modules.
 (moduleCompulsoryModule)-[:EXTENDS]->(moduleCourseModule),
@@ -222,15 +435,45 @@ CREATE
 	name: "ModuleMain",
 	type: "ModuleType.DomainMain"
 })-[:INSTANCE_OF]->(moduleDesc),
-(moduleMainDescriptor)-[:HAS_VIEW]->(:ANNOTATION {
+(moduleMainDescriptor)-[:HAS_VIEW]->(moduleMainViewDesc:ANNOTATION {
 	name: "ModuleMainView",
 	formTitle: "Course Management App: CourseMan",
 	imageIcon: "courseman.jpg",
-	domainClassLabel: "Course Module",
 	view: "View.class",
 	viewType: "RegionType.Main",
-	parent: "RegionName.Tools"
+	parent: "RegionName.Tools",
+	topX: "0.5",
+	topY: "0.5",
+	widthRatio: "0.75f",
+	heightRatio: "1f",
+	children: "RegionName.Desktop,RegionName.MenuBar,RegionName.ToolBar,RegionName.StatusBar",
+	excludeComponents: "RegionName.Add"
 })-[:INSTANCE_OF]->(viewDesc),
+(moduleMainViewDesc)-[:HAS_PROPERTY]->(:ANNOTATION {
+	name: "PropertyName.view_toolBar_buttonIconDisplay",
+	valueAsString: "true",
+	valueType: "Boolean.class"
+})-[:INSTANCE_OF]->(propertyDesc),
+(moduleMainViewDesc)-[:HAS_PROPERTY]->(:ANNOTATION {
+	name: "PropertyName.view_toolBar_buttonTextDisplay",
+	valueAsString: "false",
+	valueType: "Boolean.class"
+})-[:INSTANCE_OF]->(propertyDesc),
+(moduleMainViewDesc)-[:HAS_PROPERTY]->(:ANNOTATION {
+	name: "PropertyName.view_searchToolBar_buttonIconDisplay",
+	valueAsString: "true",
+	valueType: "Boolean.class"
+})-[:INSTANCE_OF]->(propertyDesc),
+(moduleMainViewDesc)-[:HAS_PROPERTY]->(:ANNOTATION {
+	name: "PropertyName.view_searchToolBar_buttonTextDisplay",
+	valueAsString: "false",
+	valueType: "Boolean.class"
+})-[:INSTANCE_OF]->(propertyDesc),
+(moduleMainViewDesc)-[:HAS_PROPERTY]->(:ANNOTATION {
+	name: "PropertyName.view_lang_international",
+	valueAsString: "true",
+	valueType: "Boolean.class"
+})-[:INSTANCE_OF]->(propertyDesc),
 (moduleMainDescriptor)-[:HAS_CONTROLLER]->(:ANNOTATION { name: "ModuleMainController", controller: "Controller.class" })-[:INSTANCE_OF]->(controllerDesc),
 (moduleMainDescriptor)-[:HAS_SETUP]->(:ANNOTATION { name: "ModuleMainSetUp", postSetUp: "CopyResourceFilesCommand.class" })-[:INSTANCE_OF]->(setupDesc),
 

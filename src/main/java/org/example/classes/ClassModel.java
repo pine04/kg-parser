@@ -11,11 +11,10 @@ import org.neo4j.driver.types.Node;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.example.Constants.basePackage;
 
@@ -23,69 +22,51 @@ public class ClassModel {
     private String className;
     private String packageName;
     private String sourceFilePath;
-    private ArrayList<String> imports;
+    private Set<String> imports;
     private ArrayList<String> extendsList;
     private ArrayList<String> annotations;
+    private ArrayList<String> attributes;
 
     public String getClassName() {
         return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
     }
 
     public String getPackageName() {
         return packageName;
     }
 
-    public void setPackageName(String packageName) {
-        this.packageName = packageName;
-    }
-
     public String getSourceFilePath() {
         return sourceFilePath;
     }
 
-    public void setSourceFilePath(String sourceFilePath) {
-        this.sourceFilePath = sourceFilePath;
-    }
-
-    public ArrayList<String> getImports() {
+    public Set<String> getImports() {
         return imports;
-    }
-
-    public void setImports(ArrayList<String> imports) {
-        this.imports = imports;
     }
 
     public ArrayList<String> getExtendsList() {
         return extendsList;
     }
 
-    public void setExtendsList(ArrayList<String> extendsList) {
-        this.extendsList = extendsList;
-    }
-
     public ArrayList<String> getAnnotations() {
         return annotations;
     }
 
-    public void setAnnotations(ArrayList<String> annotations) {
-        this.annotations = annotations;
+    public ArrayList<String> getAttributes() {
+        return attributes;
     }
 
     public static ClassModel nodeToModel(Node node) {
         Map<String, Object> nodeProperties = node.asMap();
 
         ClassModel classModel = new ClassModel();
-        classModel.setClassName(nodeProperties.getOrDefault("name", "").toString());
-        classModel.setPackageName(basePackage + "." + nodeProperties.getOrDefault("packageName", "").toString());
-        classModel.setSourceFilePath(nodeProperties.getOrDefault("sourceFilePath", "").toString());
+        classModel.className = nodeProperties.getOrDefault("name", "").toString();
+        classModel.packageName = basePackage + "." + nodeProperties.getOrDefault("packageName", "").toString();
+        classModel.sourceFilePath = nodeProperties.getOrDefault("sourceFilePath", "").toString();
+        classModel.imports = new HashSet<>();
 
-        ArrayList<String> imports = new ArrayList<>();
         ArrayList<String> extendsList = new ArrayList<>();
         ArrayList<String> annotations = new ArrayList<>();
+        ArrayList<String> attributes = new ArrayList<>();
 
         try {
             List<Record> extendNodes = KnowledgeGraph.query(String.format("MATCH (:CLASS {name: \"%s\"})-[:EXTENDS]->(n:CLASS) RETURN n", classModel.getClassName()));
@@ -95,7 +76,7 @@ public class ClassModel {
                 String packageName = extendNode.get("packageName").asString();
 
                 extendsList.add(name);
-                imports.add(basePackage + "." + packageName + "." + name);
+                classModel.imports.add(basePackage + "." + packageName + "." + name);
             });
 
             List<Record> annotationNodes = KnowledgeGraph.query(String.format("MATCH (:CLASS {name: \"%s\"})<-[:ATTACH_TO]-(a:ANNOTATION)-[:INSTANCE_OF]->(aType:ANNOTATION_TYPE) return a, aType.name", classModel.getClassName()));
@@ -105,17 +86,25 @@ public class ClassModel {
                 AnnotationModel model = AnnotationModel.nodeToModel(annotationNode, annotationType);
 
                 if (model != null) {
-                    imports.addAll(model.getImports());
+                    classModel.imports.addAll(model.getImports());
                     annotations.add(model.generate());
                 }
+            }
+
+            List<Record> attributeNodes = KnowledgeGraph.query(String.format("MATCH (:CLASS {name: \"%s\"})-[:HAS_ATTRIBUTE]->(attribute:ATTRIBUTE) RETURN attribute", classModel.getClassName()));
+            for (Record r : attributeNodes) {
+                Node attributeNode = r.get("attribute").asNode();
+                AttributeModel model = new AttributeModel(attributeNode);
+                classModel.imports.addAll(model.getImports());
+                attributes.add(model.bind());
             }
         } catch (NullPointerException | IOException e) {
             e.printStackTrace();
         }
 
-        classModel.setImports(imports);
-        classModel.setExtendsList(extendsList);
-        classModel.setAnnotations(annotations);
+        classModel.extendsList = extendsList;
+        classModel.annotations = annotations;
+        classModel.attributes = attributes;
 
         return classModel;
     }
